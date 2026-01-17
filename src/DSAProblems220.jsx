@@ -4,6 +4,8 @@ import { CheckCircle2, Circle, ChevronDown, ChevronRight } from 'lucide-react';
 const DSAProblems220 = () => {
   const [checkedProblems, setCheckedProblems] = useState({});
   const [expandedPatterns, setExpandedPatterns] = useState({});
+  const [difficultyFilter, setDifficultyFilter] = useState([]);
+  const [companyFilter, setCompanyFilter] = useState([]);
 
   const problemsData = {
     "Array": {
@@ -393,6 +395,42 @@ const DSAProblems220 = () => {
     return Object.values(checkedProblems).filter(Boolean).length;
   };
 
+  const toggleDifficultyFilter = (difficulty) => {
+    setDifficultyFilter(prev => 
+      prev.includes(difficulty) 
+        ? prev.filter(d => d !== difficulty)
+        : [...prev, difficulty]
+    );
+  };
+
+  const toggleCompanyFilter = (company) => {
+    setCompanyFilter(prev => 
+      prev.includes(company) 
+        ? prev.filter(c => c !== company)
+        : [...prev, company]
+    );
+  };
+
+  const filterProblems = (problems) => {
+    return problems.filter(problem => {
+      const difficultyMatch = difficultyFilter.length === 0 || difficultyFilter.includes(problem.difficulty);
+      const companyMatch = companyFilter.length === 0 || problem.companies.some(c => companyFilter.includes(c));
+      return difficultyMatch && companyMatch;
+    });
+  };
+
+  const getAllCompanies = () => {
+    const companies = new Set();
+    Object.values(problemsData).forEach(pattern => {
+      Object.values(pattern).forEach(subPattern => {
+        subPattern.forEach(problem => {
+          problem.companies.forEach(company => companies.add(company));
+        });
+      });
+    });
+    return Array.from(companies).sort();
+  };
+
   const getPatternProgress = (patternKey) => {
     const pattern = problemsData[patternKey];
     let total = 0;
@@ -434,6 +472,51 @@ const DSAProblems220 = () => {
           </div>
         </div>
 
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Filters</h3>
+          
+          {/* Difficulty Filter */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty Level</label>
+            <div className="flex gap-2 flex-wrap">
+              {['Easy', 'Medium', 'Hard'].map(difficulty => (
+                <button
+                  key={difficulty}
+                  onClick={() => toggleDifficultyFilter(difficulty)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    difficultyFilter.includes(difficulty)
+                      ? `${getDifficultyColor(difficulty)} border-2 border-current`
+                      : 'bg-gray-100 text-gray-600 border-2 border-gray-200 hover:bg-gray-200'
+                  }`}
+                >
+                  {difficulty}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Company Filter */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Companies</label>
+            <div className="flex gap-2 flex-wrap">
+              {getAllCompanies().map(company => (
+                <button
+                  key={company}
+                  onClick={() => toggleCompanyFilter(company)}
+                  className={`px-3 py-1 rounded-lg text-sm transition-all ${
+                    companyFilter.includes(company)
+                      ? 'bg-indigo-600 text-white border-2 border-indigo-600'
+                      : 'bg-gray-100 text-gray-600 border-2 border-gray-200 hover:bg-gray-200'
+                  }`}
+                >
+                  {company}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Problems List */}
         <div className="space-y-4">
           {Object.entries(problemsData).map(([patternKey, subPatterns]) => {
@@ -467,57 +550,64 @@ const DSAProblems220 = () => {
                 {/* Sub-patterns */}
                 {isExpanded && (
                   <div className="p-4">
-                    {Object.entries(subPatterns).map(([subPatternKey, problems]) => (
-                      <div key={subPatternKey} className="mb-6 last:mb-0">
-                        <h3 className="text-lg font-semibold text-gray-700 mb-3 border-b-2 border-indigo-200 pb-2">
-                          {subPatternKey} ({problems.length})
-                        </h3>
-                        <div className="space-y-2">
-                          {problems.map((problem, index) => {
-                            const problemKey = `${patternKey}-${subPatternKey}-${index}`;
-                            const isChecked = checkedProblems[problemKey];
-                            
-                            return (
-                              <div 
-                                key={index}
-                                className={`flex items-center p-3 rounded-lg border-2 transition-all cursor-pointer ${
-                                  isChecked 
-                                    ? 'border-green-400 bg-green-50' 
-                                    : 'border-gray-200 bg-white hover:border-indigo-300'
-                                }`}
-                                onClick={() => toggleProblem(patternKey, subPatternKey, index)}
-                              >
-                                <div className="flex-shrink-0 mr-3">
-                                  {isChecked ? (
-                                    <CheckCircle2 className="text-green-600" size={24} />
-                                  ) : (
-                                    <Circle className="text-gray-400" size={24} />
-                                  )}
-                                </div>
-                                
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center space-x-3 mb-1">
-                                    <h4 className={`font-medium ${isChecked ? 'line-through text-gray-500' : 'text-gray-800'}`}>
-                                      {problem.name}
-                                    </h4>
-                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${getDifficultyColor(problem.difficulty)}`}>
-                                      {problem.difficulty}
-                                    </span>
+                    {Object.entries(subPatterns).map(([subPatternKey, problems]) => {
+                      const filteredProblems = filterProblems(problems);
+                      
+                      if (filteredProblems.length === 0) return null;
+                      
+                      return (
+                        <div key={subPatternKey} className="mb-6 last:mb-0">
+                          <h3 className="text-lg font-semibold text-gray-700 mb-3 border-b-2 border-indigo-200 pb-2">
+                            {subPatternKey} ({filteredProblems.length})
+                          </h3>
+                          <div className="space-y-2">
+                            {filteredProblems.map((problem, index) => {
+                              const originalIndex = problems.indexOf(problem);
+                              const problemKey = `${patternKey}-${subPatternKey}-${originalIndex}`;
+                              const isChecked = checkedProblems[problemKey];
+                              
+                              return (
+                                <div 
+                                  key={index}
+                                  className={`flex items-center p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                                    isChecked 
+                                      ? 'border-green-400 bg-green-50' 
+                                      : 'border-gray-200 bg-white hover:border-indigo-300'
+                                  }`}
+                                  onClick={() => toggleProblem(patternKey, subPatternKey, originalIndex)}
+                                >
+                                  <div className="flex-shrink-0 mr-3">
+                                    {isChecked ? (
+                                      <CheckCircle2 className="text-green-600" size={24} />
+                                    ) : (
+                                      <Circle className="text-gray-400" size={24} />
+                                    )}
                                   </div>
-                                  <div className="flex flex-wrap gap-1">
-                                    {problem.companies.slice(0, 3).map((company, idx) => (
-                                      <span key={idx} className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
-                                        {company}
+                                  
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center space-x-3 mb-1">
+                                      <h4 className={`font-medium ${isChecked ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                                        {problem.name}
+                                      </h4>
+                                      <span className={`px-2 py-1 rounded text-xs font-semibold ${getDifficultyColor(problem.difficulty)}`}>
+                                        {problem.difficulty}
                                       </span>
-                                    ))}
+                                    </div>
+                                    <div className="flex flex-wrap gap-1">
+                                      {problem.companies.slice(0, 3).map((company, idx) => (
+                                        <span key={idx} className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
+                                          {company}
+                                        </span>
+                                      ))}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
