@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { CheckCircle2, Circle, ChevronDown, ChevronRight } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { CheckCircle2, Circle, ChevronDown, ChevronRight, X } from 'lucide-react';
 
 const DSAProblems220 = () => {
   const [checkedProblems, setCheckedProblems] = useState({});
   const [expandedPatterns, setExpandedPatterns] = useState({});
   const [difficultyFilter, setDifficultyFilter] = useState([]);
   const [companyFilter, setCompanyFilter] = useState([]);
+  const [openDifficultyDropdown, setOpenDifficultyDropdown] = useState(false);
+  const [openCompanyDropdown, setOpenCompanyDropdown] = useState(false);
+  const difficultyRef = useRef(null);
+  const companyRef = useRef(null);
 
   const problemsData = {
     "Array": {
@@ -447,6 +451,81 @@ const DSAProblems220 = () => {
     return { completed, total };
   };
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (difficultyRef.current && !difficultyRef.current.contains(event.target)) {
+        setOpenDifficultyDropdown(false);
+      }
+      if (companyRef.current && !companyRef.current.contains(event.target)) {
+        setOpenCompanyDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const CustomDropdown = ({ label, options, selected, onSelect, open, setOpen, dropdownRef }) => {
+    return (
+      <div ref={dropdownRef} className="relative">
+        <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+        <button
+          onClick={() => setOpen(!open)}
+          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg bg-white text-left flex items-center justify-between hover:border-indigo-400 focus:outline-none focus:border-indigo-500 transition-all"
+        >
+          <span className="text-gray-700">
+            {selected.length === 0 ? `Select ${label.toLowerCase()}` : `${selected.length} selected`}
+          </span>
+          <ChevronDown size={18} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+        </button>
+
+        {open && (
+          <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-indigo-400 rounded-lg shadow-lg z-50">
+            <div className="max-h-56 overflow-y-auto">
+              {options.map((option) => (
+                <div
+                  key={option}
+                  onClick={() => {
+                    onSelect(option);
+                  }}
+                  className="flex items-center px-4 py-3 hover:bg-indigo-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(option)}
+                    onChange={() => {}}
+                    className="w-4 h-4 text-indigo-600 rounded cursor-pointer"
+                  />
+                  <span className="ml-3 text-gray-700 flex-1">{option}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Selected Items Display */}
+        {selected.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {selected.map((item) => (
+              <div
+                key={item}
+                className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2"
+              >
+                {item}
+                <X
+                  size={14}
+                  className="cursor-pointer hover:text-indigo-900"
+                  onClick={() => onSelect(item)}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-6xl mx-auto">
@@ -477,43 +556,37 @@ const DSAProblems220 = () => {
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Filters</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Difficulty Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty Level</label>
-              <select
-                multiple
-                value={difficultyFilter}
-                onChange={(e) => {
-                  const selected = Array.from(e.target.selectedOptions, option => option.value);
-                  setDifficultyFilter(selected);
-                }}
-                className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-all"
-              >
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-              </select>
-              <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
-            </div>
+            <CustomDropdown
+              label="Difficulty Level"
+              options={['Easy', 'Medium', 'Hard']}
+              selected={difficultyFilter}
+              onSelect={(difficulty) => {
+                setDifficultyFilter(prev =>
+                  prev.includes(difficulty)
+                    ? prev.filter(d => d !== difficulty)
+                    : [...prev, difficulty]
+                );
+              }}
+              open={openDifficultyDropdown}
+              setOpen={setOpenDifficultyDropdown}
+              dropdownRef={difficultyRef}
+            />
 
-            {/* Company Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Companies</label>
-              <select
-                multiple
-                value={companyFilter}
-                onChange={(e) => {
-                  const selected = Array.from(e.target.selectedOptions, option => option.value);
-                  setCompanyFilter(selected);
-                }}
-                className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-all"
-              >
-                {getAllCompanies().map(company => (
-                  <option key={company} value={company}>{company}</option>
-                ))}
-              </select>
-              <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
-            </div>
+            <CustomDropdown
+              label="Companies"
+              options={getAllCompanies()}
+              selected={companyFilter}
+              onSelect={(company) => {
+                setCompanyFilter(prev =>
+                  prev.includes(company)
+                    ? prev.filter(c => c !== company)
+                    : [...prev, company]
+                );
+              }}
+              open={openCompanyDropdown}
+              setOpen={setOpenCompanyDropdown}
+              dropdownRef={companyRef}
+            />
           </div>
         </div>
 
