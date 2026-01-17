@@ -476,43 +476,43 @@ const DSAProblems220 = () => {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Filters</h3>
           
-          {/* Difficulty Filter */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty Level</label>
-            <div className="flex gap-2 flex-wrap">
-              {['Easy', 'Medium', 'Hard'].map(difficulty => (
-                <button
-                  key={difficulty}
-                  onClick={() => toggleDifficultyFilter(difficulty)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    difficultyFilter.includes(difficulty)
-                      ? `${getDifficultyColor(difficulty)} border-2 border-current`
-                      : 'bg-gray-100 text-gray-600 border-2 border-gray-200 hover:bg-gray-200'
-                  }`}
-                >
-                  {difficulty}
-                </button>
-              ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Difficulty Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty Level</label>
+              <select
+                multiple
+                value={difficultyFilter}
+                onChange={(e) => {
+                  const selected = Array.from(e.target.selectedOptions, option => option.value);
+                  setDifficultyFilter(selected);
+                }}
+                className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-all"
+              >
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
             </div>
-          </div>
 
-          {/* Company Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Companies</label>
-            <div className="flex gap-2 flex-wrap">
-              {getAllCompanies().map(company => (
-                <button
-                  key={company}
-                  onClick={() => toggleCompanyFilter(company)}
-                  className={`px-3 py-1 rounded-lg text-sm transition-all ${
-                    companyFilter.includes(company)
-                      ? 'bg-indigo-600 text-white border-2 border-indigo-600'
-                      : 'bg-gray-100 text-gray-600 border-2 border-gray-200 hover:bg-gray-200'
-                  }`}
-                >
-                  {company}
-                </button>
-              ))}
+            {/* Company Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Companies</label>
+              <select
+                multiple
+                value={companyFilter}
+                onChange={(e) => {
+                  const selected = Array.from(e.target.selectedOptions, option => option.value);
+                  setCompanyFilter(selected);
+                }}
+                className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 transition-all"
+              >
+                {getAllCompanies().map(company => (
+                  <option key={company} value={company}>{company}</option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
             </div>
           </div>
         </div>
