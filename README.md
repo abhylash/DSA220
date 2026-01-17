@@ -1,16 +1,112 @@
-# React + Vite
+# 🚀 FAANG DSA 220 – Interactive Problem Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A beautiful, interactive **React-based DSA problem tracker** featuring **220 handpicked problems** essential for cracking FAANG interviews.
+Built with **React, Vite, Tailwind CSS, and Lucide Icons**.
+Track your progress, stay consistent, and stop preparing like an amateur.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🔥 Why this exists
 
-## React Compiler
+Most people “prepare DSA” with random lists and no structure.
+This app gives you:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* A **pattern-wise roadmap**
+* Visual **progress tracking**
+* Motivation through **completion stats**
+* A real, deployable product for your portfolio
 
-## Expanding the ESLint configuration
+This is not a toy.
+This is your **placement weapon**.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## ✨ Features
+
+* 📊 Overall progress bar (220 problems)
+* 🧠 Pattern-wise grouping (Array, Strings, Graph, DP, etc.)
+* ✅ Click to mark problems as completed
+* 📈 Pattern-level progress tracking
+* 🎨 Beautiful Tailwind UI
+* ⚡ Super fast with Vite
+* 🌍 Ready for Vercel deployment
+
+---
+
+## 🛠 Tech Stack
+
+* **Frontend:** React + Vite
+* **Styling:** Tailwind CSS
+* **Icons:** Lucide React
+* **Build Tool:** Vite
+* **Deployment:** Vercel
+
+---
+
+## 📦 Local Setup
+
+```bash
+git clone https://github.com/abhylash/DSA220.git
+cd DSA220
+npm install
+npm run dev
+```
+
+Open:
+
+```
+http://localhost:5173
+```
+
+---
+
+## 🧪 Production Build
+
+```bash
+npm run build
+npm run preview
+```
+
+---
+
+## 🚀 Deploy on Vercel
+
+```bash
+vercel
+```
+
+* Framework → **Vite**
+* Build command → `npm run build`
+* Output directory → `dist`
+
+---
+
+## 🧭 Roadmap
+
+* [ ] Persist progress with LocalStorage
+* [ ] User Auth (Login / Signup)
+* [ ] Backend API (Node + MongoDB)
+* [ ] Cloud Deployment (AWS)
+
+---
+
+## 🧠 Philosophy
+
+> Stop watching tutorials.
+> Start shipping products.
+> This tracker is your first step to FAANG-level discipline.
+
+---
+
+## 👨‍💻 Author
+
+**Abhylash**
+MCA @ RV College of Engineering
+Aspiring Backend / Distributed Systems Engineer
+
+---
+
+## ⭐ Star this repo
+
+If you’re serious about cracking FAANG,
+this repo deserves a ⭐.
